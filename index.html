@@ -1,88 +1,934 @@
+
 <!doctype html>
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0f172a"><title>AI Object Hunt｜隨機物件與手勢挑戰</title><style>
-:root{font-family:system-ui,-apple-system,'Noto Sans TC',sans-serif;color:#e5e7eb;background:#0b1220}*{box-sizing:border-box}body{margin:0}main{max-width:1050px;margin:auto;padding:20px}h1{font-size:clamp(25px,4vw,39px);margin:8px 0}p{color:#aebbd0;line-height:1.65}.card{background:#151f33;border:1px solid #34445f;border-radius:18px;padding:18px;margin:15px 0}.muted{color:#aebbd0;font-size:14px}.chips{display:flex;flex-wrap:wrap;gap:9px}.chip{border:1px solid #60718d;border-radius:999px;padding:10px 14px;cursor:pointer;user-select:none;background:#202e46}.chip input{accent-color:#38bdf8}.chip:has(input:checked){background:#164e63;border-color:#22d3ee}button{border:0;border-radius:11px;padding:12px 17px;background:#38bdf8;color:#082f49;font-size:15px;font-weight:750;cursor:pointer}button.secondary{background:#334155;color:#f8fafc}button:disabled{opacity:.4;cursor:not-allowed}.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{background:#24344f;padding:14px;border-radius:12px;text-align:center}.stat b{display:block;font-size:25px}.stage{position:relative;background:#020617;border-radius:15px;overflow:hidden;min-height:260px;display:grid;place-items:center}.stage video{display:block;width:100%;height:auto;max-height:540px;object-fit:contain;transform:scaleX(-1)}canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.placeholder{position:absolute;color:#aebbd0;text-align:center;padding:20px}.target{font-size:clamp(22px,4vw,32px);font-weight:800}.status{padding:10px 14px;border-radius:12px;background:#273852;line-height:1.6}.ok{color:#86efac}.warn{color:#fbbf24}.tiny{font-size:12px;color:#9fb0c8}footer{margin:20px 0;color:#8ca1bc;font-size:13px}.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.shot{border:1px solid #34445f;border-radius:12px;padding:10px}.shot img{display:block;width:100%;border-radius:8px}.shot a{display:inline-block;margin-top:8px;color:#67e8f9}.shot strong{display:block;margin-bottom:8px} @media(max-width:500px){main{padding:12px}.stats{gap:6px}.stat{padding:9px}.stat b{font-size:21px}}
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <title>AI Object Hunt｜物件 × 手勢挑戰</title>
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif;
+      color: #e5e7eb;
+      background: #0b1220;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { max-width: 1050px; margin: auto; padding: 20px; }
+    [hidden] { display: none !important; }
+    h1 { margin: 8px 0; }
+    p { color: #aebbd0; line-height: 1.65; }
+    button {
+      border: 0;
+      border-radius: 11px;
+      padding: 12px 17px;
+      background: #38bdf8;
+      color: #082f49;
+      font-size: 15px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+    button.secondary { background: #334155; color: #f8fafc; }
+    button:disabled { opacity: .4; cursor: not-allowed; }
+    .screen { min-height: calc(100vh - 40px); }
+    .intro {
+      max-width: 760px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      justify-content: center;
+      padding: 35px 8px;
+    }
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #7dd3fc;
+      font-weight: 800;
+    }
+    .heroIcon { font-size: 65px; margin: 15px 0 0; }
+    .intro h1 {
+      font-size: clamp(38px, 7vw, 65px);
+      letter-spacing: -2px;
+    }
+    .subtitle { font-size: 19px; margin: 0 0 23px; }
+    .ruleCard {
+      width: 100%;
+      background: #151f33;
+      border: 1px solid #34445f;
+      border-radius: 22px;
+      padding: 23px;
+      text-align: left;
+      margin: 12px 0 17px;
+    }
+    .ruleCard h2 { margin: 0 0 16px; }
+    .rule {
+      display: flex;
+      align-items: start;
+      gap: 16px;
+      padding: 10px 0;
+      border-bottom: 1px solid #293a54;
+    }
+    .rule:last-child { border: 0; }
+    .rule span { color: #67e8f9; font-weight: 900; font-size: 18px; }
+    .rule p { margin: 0; }
+    .rule strong { color: #fff; }
+    .greenText { color: #4ade80 !important; }
+    .smallNote { font-size: 13px; color: #9fb0c8; line-height: 1.7; }
+    .primary {
+      background: linear-gradient(115deg, #38bdf8, #67e8f9);
+      color: #082f49;
+    }
+    .bigButton {
+      font-size: 20px;
+      padding: 17px 60px;
+      margin: 12px 0;
+      box-shadow: 0 10px 35px #0ea5e944;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0 20px;
+    }
+    .topbar h2 { margin: 3px 0; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .stat {
+      background: #24344f;
+      padding: 14px;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .stat b { display: block; font-size: 25px; }
+    .challenge {
+      background: #151f33;
+      border: 1px solid #34445f;
+      border-radius: 16px;
+      padding: 18px;
+      margin: 16px 0;
+    }
+    .target {
+      font-size: clamp(22px, 4vw, 32px);
+      font-weight: 800;
+      margin: 9px 0;
+    }
+    .status {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: #273852;
+      line-height: 1.6;
+    }
+    .ok { color: #86efac; }
+    .warn { color: #fbbf24; }
+    .stage {
+      position: relative;
+      background: #020617;
+      border: 6px solid #334155;
+      border-radius: 15px;
+      overflow: hidden;
+      min-height: 310px;
+      display: grid;
+      place-items: center;
+      transition: border-color .12s, box-shadow .12s;
+    }
+    .stage.success {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 5px #22c55e40, 0 0 65px #22c55e60;
+    }
+    .stage video {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 540px;
+      object-fit: contain;
+      transform: scaleX(-1);
+    }
+    .stage canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    .placeholder {
+      position: absolute;
+      color: #aebbd0;
+      text-align: center;
+      padding: 20px;
+    }
+    .countdown {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      background: #020617b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .countdown span {
+      font-size: clamp(100px, 20vw, 190px);
+      font-weight: 900;
+      color: #67e8f9;
+      text-shadow: 0 5px 35px #0ea5e9;
+    }
+    .countdown small { font-size: 22px; font-weight: 700; color: #fff; }
+    .successFlash {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      background: #16a34a77;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: clamp(24px, 6vw, 50px);
+      font-weight: 900;
+      text-shadow: 0 3px 15px #14532d;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 14px;
+    }
+    .centered { justify-content: center; }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .shot {
+      background: #1e293b;
+      border: 1px solid #34445f;
+      border-radius: 12px;
+      padding: 10px;
+    }
+    .shot img { display: block; width: 100%; border-radius: 8px; }
+    .shot a { display: inline-block; margin-top: 8px; color: #67e8f9; }
+    .shot strong { display: block; margin-bottom: 8px; }
 
-[hidden]{display:none!important}.screen{min-height:calc(100vh - 40px)}.intro{max-width:760px;margin:auto;display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:center;padding:35px 8px}.eyebrow{font-size:12px;letter-spacing:2px;color:#7dd3fc;font-weight:800}.heroIcon{font-size:65px;margin:15px 0 0}.intro h1{font-size:clamp(38px,7vw,65px);letter-spacing:-2px;margin:8px 0}.subtitle{font-size:19px;margin:0 0 23px}.ruleCard{width:100%;background:#151f33;border:1px solid #34445f;border-radius:22px;padding:23px;text-align:left;margin:12px 0 17px}.ruleCard h2{margin:0 0 16px}.rule{display:flex;align-items:start;gap:16px;padding:10px 0;border-bottom:1px solid #293a54}.rule:last-child{border:0}.rule span{color:#67e8f9;font-weight:900;font-size:18px}.rule p{margin:0}.rule strong{color:#fff}.greenText{color:#4ade80!important}.smallNote{font-size:13px;color:#9fb0c8;line-height:1.7}.primary{background:linear-gradient(115deg,#38bdf8,#67e8f9);color:#082f49}.bigButton{font-size:20px;padding:17px 60px;margin:12px 0;box-shadow:0 10px 35px #0ea5e944}.bigButton span{margin-left:8px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:14px 0 20px}.topbar h2{margin:3px 0}.challenge{background:#151f33;border:1px solid #34445f;border-radius:16px;padding:18px;margin:16px 0}.challenge .target{margin:9px 0}.stage{border:6px solid #334155;transition:border-color .12s,box-shadow .12s;min-height:310px}.stage.success{border-color:#22c55e;box-shadow:0 0 0 5px #22c55e40,0 0 65px #22c55e60}.countdown{position:absolute;inset:0;z-index:5;background:#020617b8;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px}.countdown span{font-size:clamp(100px,20vw,190px);font-weight:900;color:#67e8f9;text-shadow:0 5px 35px #0ea5e9}.countdown small{font-size:22px;font-weight:700;color:#fff}.successFlash{position:absolute;inset:0;z-index:6;background:#16a34a77;display:grid;place-items:center;color:white;font-size:clamp(24px,6vw,50px);font-weight:900;text-shadow:0 3px 15px #14532d}.centered{justify-content:center}.gallery{margin-top:12px}.shot{background:#1e293b}@media(max-width:550px){.ruleCard{padding:16px}.bigButton{width:100%}.topbar h2{font-size:18px}.stage{min-height:220px}.stat b{font-size:20px}}
-</style></head><body><main>
-<section id="homeScreen" class="screen intro">
- <div class="eyebrow">MEDIAPIPE TASKS · CLASSROOM CHALLENGE</div>
- <div class="heroIcon">🎯</div><h1>AI Object Hunt</h1><p class="subtitle">物件 × 手勢 · 三關隨機挑戰</p>
- <div class="ruleCard"><h2>遊戲規則</h2>
- <div class="rule"><span>01</span><p>每關隨機抽出 <strong>1 種物件＋1 個手勢</strong>，不能自行選題。</p></div>
- <div class="rule"><span>02</span><p>將指定物件放進鏡頭，辨識成功後完成指定手勢。</p></div>
- <div class="rule"><span>03</span><p>成功時畫面邊框<strong class="greenText">變綠</strong>，自動截圖並前往下一關。</p></div>
- <div class="rule"><span>04</span><p>總共要完成 <strong>3 關</strong>；跳過只會換題，不算通關。</p></div>
- </div>
- <p class="smallNote">題庫：人、後背包、瓶子、杯子、椅子、滑鼠、鍵盤、筆記型電腦、手機、書本。需允許攝影機權限，建議使用 HTTPS。</p>
- <button id="start" class="primary bigButton">開始挑戰 <span>→</span></button>
- <p id="homeStatus" class="smallNote" role="status" aria-live="polite">按下開始後會進入遊戲畫面；第一次載入模型可能需要一些時間。</p>
-</section>
-<section id="gameScreen" class="screen" hidden>
- <div class="topbar"><div><div class="eyebrow">AI OBJECT HUNT</div><h2>物件 × 手勢挑戰</h2></div><button id="exit" class="secondary">返回封面</button></div>
- <div class="stats"><div class="stat">目前關卡<b id="level">1 / 3</b></div><div class="stat">成功完成<b id="score">0 / 3</b></div><div class="stat">跳過次數<b id="count">0</b></div></div>
- <div class="challenge"><div class="eyebrow">本關任務</div><div class="target" id="target">準備開始</div><div id="status" class="status" role="status" aria-live="polite">正在準備攝影機…</div></div>
- <div class="stage" id="stage"><video id="video" autoplay playsinline muted></video><canvas id="overlay"></canvas><div class="placeholder" id="placeholder">📷<br>正在啟動攝影機…</div><div id="countdown" class="countdown" hidden><span id="countdownNumber">3</span><small>準備開始</small></div><div id="successFlash" class="successFlash" hidden>✓ 挑戰成功！</div></div>
- <div class="actions"><button id="skip" class="secondary" disabled>跳過換題（不計分）</button><button id="reset" class="secondary" disabled>重新挑戰</button></div>
- <p class="smallNote">先辨識物件，再做指定手勢。每次成功會自動截圖；完成 3 關後查看成果。</p>
-</section>
-<section id="resultScreen" class="screen intro" hidden><div class="heroIcon">🏆</div><h1>三關挑戰成功！</h1><p class="subtitle">恭喜完成所有指定物件與手勢</p><div class="stats"><div class="stat">完成關卡<b>3 / 3</b></div><div class="stat">跳過次數<b id="resultSkipped">0</b></div><div class="stat">過關截圖<b>3 張</b></div></div><div class="ruleCard"><h2>📸 過關紀錄</h2><p class="smallNote">截圖僅保留在此頁，請在離開前下載。</p><div id="gallery" class="gallery"></div></div><div class="actions centered"><button id="playAgain" class="primary">再玩一次</button><button id="backHome" class="secondary">返回封面</button></div></section>
+    @media (max-width: 550px) {
+      main { padding: 12px; }
+      .ruleCard { padding: 16px; }
+      .bigButton { width: 100%; }
+      .topbar h2 { font-size: 18px; }
+      .stage { min-height: 220px; }
+      .stats { gap: 6px; }
+      .stat { padding: 9px; }
+      .stat b { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+
+  <!-- 封面 -->
+  <section id="homeScreen" class="screen intro">
+    <div class="eyebrow">MEDIAPIPE TASKS · CLASSROOM CHALLENGE</div>
+    <div class="heroIcon">🎯</div>
+    <h1>AI Object Hunt</h1>
+    <p class="subtitle">物件 × 手勢 · 三關隨機挑戰</p>
+
+    <div class="ruleCard">
+      <h2>遊戲規則</h2>
+      <div class="rule">
+        <span>01</span>
+        <p>每關隨機抽出 <strong>1 種物件＋1 個手勢</strong>，不能自行選題。</p>
+      </div>
+      <div class="rule">
+        <span>02</span>
+        <p>將指定物件放進鏡頭，辨識成功後完成指定手勢。</p>
+      </div>
+      <div class="rule">
+        <span>03</span>
+        <p>成功時畫面邊框<strong class="greenText">變綠</strong>，自動截圖並前往下一關。</p>
+      </div>
+      <div class="rule">
+        <span>04</span>
+        <p>總共要完成 <strong>3 關</strong>；跳過只會換題，不算通關。</p>
+      </div>
+    </div>
+
+    <p class="smallNote">
+      題庫：人、後背包、瓶子、杯子、椅子、滑鼠、鍵盤、
+      筆記型電腦、手機、書本。需允許攝影機權限。
+    </p>
+    <button id="start" class="primary bigButton">開始挑戰 →</button>
+    <p id="homeStatus" class="smallNote" role="status">
+      按下開始後會進入遊戲畫面，第一次載入模型可能需要一些時間。
+    </p>
+  </section>
+
+  <!-- 遊戲畫面 -->
+  <section id="gameScreen" class="screen" hidden>
+    <div class="topbar">
+      <div>
+        <div class="eyebrow">AI OBJECT HUNT</div>
+        <h2>物件 × 手勢挑戰</h2>
+      </div>
+      <button id="exit" class="secondary">返回封面</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat">目前關卡<b id="level">1 / 3</b></div>
+      <div class="stat">成功完成<b id="score">0 / 3</b></div>
+      <div class="stat">跳過次數<b id="count">0</b></div>
+    </div>
+
+    <div class="challenge">
+      <div class="eyebrow">本關任務</div>
+      <div class="target" id="target">準備開始</div>
+      <div id="status" class="status" role="status">正在準備攝影機…</div>
+    </div>
+
+    <div class="stage" id="stage">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="overlay"></canvas>
+      <div class="placeholder" id="placeholder">📷<br>正在啟動攝影機…</div>
+      <div id="countdown" class="countdown" hidden>
+        <span id="countdownNumber">3</span>
+        <small>準備開始</small>
+      </div>
+      <div id="successFlash" class="successFlash" hidden>✓ 挑戰成功！</div>
+    </div>
+
+    <div class="actions">
+      <button id="skip" class="secondary" disabled>跳過換題（不計分）</button>
+      <button id="reset" class="secondary" disabled>重新挑戰</button>
+    </div>
+
+    <p class="smallNote">
+      先辨識物件，再做指定手勢。每次成功會自動截圖；
+      完成 3 關後查看成果。
+    </p>
+  </section>
+
+  <!-- 結果畫面 -->
+  <section id="resultScreen" class="screen intro" hidden>
+    <div class="heroIcon">🏆</div>
+    <h1>三關挑戰成功！</h1>
+    <p class="subtitle">恭喜完成所有指定物件與手勢</p>
+
+    <div class="stats">
+      <div class="stat">完成關卡<b>3 / 3</b></div>
+      <div class="stat">跳過次數<b id="resultSkipped">0</b></div>
+      <div class="stat">過關截圖<b>3 張</b></div>
+    </div>
+
+    <div class="ruleCard">
+      <h2>📸 過關紀錄</h2>
+      <p class="smallNote">截圖僅保留在此頁，請在離開前下載。</p>
+      <div id="gallery" class="gallery"></div>
+    </div>
+
+    <div class="actions centered">
+      <button id="playAgain" class="primary">再玩一次</button>
+      <button id="backHome" class="secondary">返回封面</button>
+    </div>
+  </section>
+
 </main>
-<script>
-// Keep the home button functional even when the remote MediaPipe module is unavailable.
-let FilesetResolver, ObjectDetector, GestureRecognizer;
-async function loadMediaPipe(){
- if(FilesetResolver) return;
- const urls=[
-  'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm',
-  "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm"
- ];
- let lastError;
- for(const url of urls){
-  try{
-   const m=await Promise.race([import(url),new Promise((_,reject)=>setTimeout(()=>reject(new Error('模型函式庫載入逾時（20 秒）')),20000))]);
-   FilesetResolver=m.FilesetResolver;ObjectDetector=m.ObjectDetector;GestureRecognizer=m.GestureRecognizer;
-   if(FilesetResolver&&ObjectDetector&&GestureRecognizer)return;
-   throw new Error('MediaPipe 模組缺少必要元件');
-  }catch(e){lastError=e;}
- }
- throw new Error('無法下載 MediaPipe 函式庫：'+(lastError?.message||lastError));
-}
-const catalog=[['person','人','🧍'],['backpack','後背包','🎒'],['bottle','瓶子','🧴'],['cup','杯子','🥤'],['chair','椅子','🪑'],['mouse','滑鼠','🖱️'],['keyboard','鍵盤','⌨️'],['laptop','筆記型電腦','💻'],['cell phone','手機','📱'],['book','書本','📖']];
-const handCatalog=[['Thumb_Up','👍 比讚'],['Thumb_Down','👎 倒讚'],['Victory','✌️ 勝利手勢'],['Open_Palm','🖐️ 張開手掌'],['Closed_Fist','✊ 握拳'],['Pointing_Up','☝️ 食指向上']];
-const $=id=>document.getElementById(id);
-let sessionToken=0,countdownTimer=null,detector,gestures,stream,active=false,phase='idle',pool=catalog,current=null,currentHand=null,previousPair='',score=0,count=0,remaining=60,deadline=0,skipCount=0,transitionUntil=0,raf=0,lastVideoTime=-1,lastInference=0,objectSince=0,thumbSince=0,thumbReleased=true,detected=[],lastGesture='',busy=false;
-const showScreen=(name)=>{for(const id of ['homeScreen','gameScreen','resultScreen'])$(id).hidden=id!==name};const setStatus=(message,kind='')=>{$('status').textContent=message;$('status').className='status '+kind};const draw=()=>{const canvas=$('overlay'),video=$('video');if(!video.videoWidth)return;const w=video.videoWidth,h=video.videoHeight;if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h}const ctx=canvas.getContext('2d');ctx.clearRect(0,0,w,h);ctx.save();ctx.translate(w,0);ctx.scale(-1,1);ctx.lineWidth=Math.max(3,w/220);ctx.font=`bold ${Math.max(17,w/35)}px system-ui`;for(const d of detected){const b=d.boundingBox;if(!b)continue;const label=d.categories?.[0]?.categoryName||'';ctx.strokeStyle=label===current?.[0]?'#4ade80':'#38bdf8';ctx.strokeRect(b.originX,b.originY,b.width,b.height);ctx.fillStyle='#0f172a';ctx.fillRect(b.originX,Math.max(0,b.originY-28),Math.min(w-b.originX,Math.max(115,label.length*13)),27);ctx.fillStyle='#fff';ctx.fillText(label,b.originX+5,Math.max(20,b.originY-7))}ctx.restore()};
-function chooseTarget(){
- const pairs=pool.flatMap(obj=>handCatalog.map(hand=>({obj,hand,key:obj[0]+'|'+hand[0]})));
- const candidates=pairs.filter(x=>x.key!==previousPair && x.obj[0]!==current?.[0]);
- const pick=(candidates.length?candidates:pairs)[Math.floor(Math.random()*(candidates.length?candidates:pairs).length)];
- current=pick.obj;currentHand=pick.hand;previousPair=pick.key;
- $('level').textContent=`${score+1} / 3`;$('target').textContent=`🎯 ${current[2]} ${current[1]} ＋ ${currentHand[1]}`;
- phase='find';objectSince=0;thumbSince=0;thumbReleased=false;
- setStatus('第一步：讓 AI 看見指定物件；第二步：做出指定手勢。');
-}
-async function initialize(){if(detector&&gestures)return;setStatus('正在載入 MediaPipe 函式庫…');await loadMediaPipe();const vision=await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm');setStatus('載入物件偵測模型…');detector=await ObjectDetector.createFromOptions(vision,{baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float32/1/efficientdet_lite0.tflite',delegate:'CPU'},runningMode:'VIDEO',scoreThreshold:.35,maxResults:8});setStatus('載入手勢辨識模型…');gestures=await GestureRecognizer.createFromOptions(vision,{baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task',delegate:'CPU'},runningMode:'VIDEO',numHands:2})}
-async function start(){if(busy)return;const token=++sessionToken;busy=true;$('start').disabled=true;showScreen('gameScreen');try{setStatus('正在啟動攝影機…');if(!navigator.mediaDevices?.getUserMedia)throw new Error('瀏覽器未提供攝影機功能；請改用 GitHub Pages 的 HTTPS 網址或 localhost 開啟');stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:960},height:{ideal:720}},audio:false});$('video').srcObject=stream;await $('video').play();$('placeholder').hidden=true;await initialize();if(token!==sessionToken)return;score=0;count=0;skipCount=0;transitionUntil=0;$('score').textContent='0 / 3';$('count').textContent='0';$('gallery').replaceChildren();active=true;lastVideoTime=-1;lastInference=0;detected=[];chooseTarget();$('skip').disabled=true;$('reset').disabled=true;await runCountdown(token);if(token!==sessionToken)return;$('skip').disabled=false;$('reset').disabled=false;raf=requestAnimationFrame(loop)}catch(err){if(token!==sessionToken)return;setStatus('啟動失敗：'+(err?.message||err)+'。請確認網路、HTTPS 和攝影機權限。','warn');if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}finally{busy=false;$('start').disabled=false}}
-async function runCountdown(token){$('countdown').hidden=false;for(let n=3;n>=1;n--){if(token!==sessionToken)return;$('countdownNumber').textContent=n;await new Promise(resolve=>setTimeout(resolve,1000))}if(token!==sessionToken)return;$('countdown').hidden=true;setStatus('挑戰開始！請先讓 AI 找到指定物件。')}
-function loop(now){if(!active)return;if(phase==='transition'){if(now>=transitionUntil){$('stage').classList.remove('success');$('successFlash').hidden=true;chooseTarget()}else{raf=requestAnimationFrame(loop);return}}const video=$('video');if(video.readyState>=2&&video.currentTime!==lastVideoTime&&now-lastInference>120){lastVideoTime=video.currentTime;lastInference=now;try{detected=detector.detectForVideo(video,now).detections||[];const result=gestures.recognizeForVideo(video,now);lastGesture=result.gestures?.[0]?.[0]?.categoryName||'None';if(phase==='find'){const found=detected.some(d=>d.categories?.some(c=>c.categoryName===current[0]&&c.score>=.4));if(found){if(!objectSince)objectSince=now;if(now-objectSince>=600){phase='thumb';thumbSince=0;thumbReleased=lastGesture!==currentHand[0];setStatus('✓ 已找到 '+current[1]+'！現在請做 '+currentHand[1]+'。','ok')}}else objectSince=0}else if(phase==='thumb'){if(lastGesture!==currentHand[0]){thumbReleased=true;thumbSince=0}else if(thumbReleased){if(!thumbSince)thumbSince=now;if(now-thumbSince>=400){captureSuccess();$('stage').classList.add('success');$('successFlash').hidden=false;score++;$('score').textContent=score+' / 3';if(score>=3){finish()}else{phase='transition';transitionUntil=now+1500;$('target').textContent=`✓ 第 ${score} 關完成！正在前往下一關…`;setStatus('已截圖保存本關紀錄。準備下一關！','ok')}}}}draw()}catch(e){setStatus('推論發生問題：'+(e?.message||e),'warn')}}raf=requestAnimationFrame(loop)}
 
-function captureSuccess(){
- const v=$('video');if(!v.videoWidth)return;
- const shot=document.createElement('canvas');shot.width=v.videoWidth;shot.height=v.videoHeight;
- const ctx=shot.getContext('2d');ctx.translate(shot.width,0);ctx.scale(-1,1);ctx.drawImage(v,0,0,shot.width,shot.height);ctx.setTransform(1,0,0,1,0,0);
- const overlay=$('overlay');if(overlay.width&&overlay.height)ctx.drawImage(overlay,0,0,shot.width,shot.height);
- ctx.fillStyle='rgba(15,23,42,.85)';ctx.fillRect(0,0,shot.width,56);
- ctx.fillStyle='#fff';ctx.font=`bold ${Math.max(16,shot.width/38)}px sans-serif`;
- ctx.fillText(`第 ${score+1} 關：${current[1]} + ${currentHand[1]}`,14,Math.min(37,shot.height-5));
- const url=shot.toDataURL('image/png');const item=document.createElement('div');item.className='shot';
- const title=document.createElement('strong');title.textContent=`第 ${score+1} 關：${current[1]}＋${currentHand[1]}`;
- const img=document.createElement('img');img.src=url;img.alt=title.textContent;
- const a=document.createElement('a');a.href=url;a.download=`AI_Object_Hunt_第${score+1}關.png`;a.textContent='下載這張截圖';
- item.append(title,img,a);$('gallery').append(item);
-}
-function finish(){active=false;cancelAnimationFrame(raf);phase='done';$('skip').disabled=true;$('resultSkipped').textContent=skipCount;setTimeout(()=>{if(phase==='done'){$('stage').classList.remove('success');$('successFlash').hidden=true;showScreen('resultScreen')}},1300)}
-function stop(){++sessionToken;active=false;$('countdown').hidden=true;$('stage').classList.remove('success');$('successFlash').hidden=true;cancelAnimationFrame(raf);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$('video').srcObject=null;$('placeholder').hidden=false;detected=[];const c=$('overlay');c.getContext('2d').clearRect(0,0,c.width,c.height);phase='idle';$('target').textContent='請按「啟動攝影機並開始」';$('skip').disabled=true;$('reset').disabled=true;setStatus('已關閉攝影機')}
-$('start').onclick=async()=>{stop();await start()};$('exit').onclick=()=>{stop();showScreen('homeScreen')};$('backHome').onclick=()=>{stop();showScreen('homeScreen')};$('playAgain').onclick=async()=>{stop();await start()};$('reset').onclick=async()=>{stop();await start()};$('skip').onclick=()=>{if(active&&phase!=='transition'){skipCount++;$('count').textContent=skipCount;chooseTarget();setStatus('已跳過：不算過關，仍須完成 3 關。')}};window.addEventListener('pagehide',()=>{if(stream)stream.getTracks().forEach(t=>t.stop())});
-window.addEventListener('error',e=>{if(!$('gameScreen').hidden)setStatus('程式錯誤：'+e.message,'warn');else $('homeStatus').textContent='程式錯誤：'+e.message});
-window.addEventListener('unhandledrejection',e=>{const message=e.reason?.message||String(e.reason);if(!$('gameScreen').hidden)setStatus('載入錯誤：'+message,'warn');else $('homeStatus').textContent='載入錯誤：'+message});
-</script></body></html>
+<script>
+  // MediaPipe 延遲載入，確保開始按鈕先正常運作
+  let FilesetResolver, ObjectDetector, GestureRecognizer;
+
+  const CDN_VERSION = "0.10.22";
+  const CDN_BASE =
+    `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${CDN_VERSION}`;
+
+  async function loadMediaPipe() {
+    if (FilesetResolver && ObjectDetector && GestureRecognizer) return;
+
+    const urls = [
+      `${CDN_BASE}/+esm`,
+      `https://unpkg.com/@mediapipe/tasks-vision@${CDN_VERSION}/vision_bundle.mjs`
+    ];
+
+    let lastError;
+
+    for (const url of urls) {
+      try {
+        const module = await Promise.race([
+          import(url),
+          new Promise((_, reject) =>
+            setTimeout(
+              () => reject(new Error("函式庫載入逾時（20 秒）")),
+              20000
+            )
+          )
+        ]);
+
+        FilesetResolver = module.FilesetResolver;
+        ObjectDetector = module.ObjectDetector;
+        GestureRecognizer = module.GestureRecognizer;
+
+        if (FilesetResolver && ObjectDetector && GestureRecognizer) return;
+
+        throw new Error("MediaPipe 模組缺少必要元件");
+      } catch (error) {
+        console.warn("MediaPipe CDN 載入失敗：", url, error);
+        lastError = error;
+      }
+    }
+
+    throw new Error(
+      "無法下載 MediaPipe 函式庫（已嘗試 jsDelivr、unpkg）：" +
+      (lastError?.message || lastError)
+    );
+  }
+
+  const catalog = [
+    ["person", "人", "🧍"],
+    ["backpack", "後背包", "🎒"],
+    ["bottle", "瓶子", "🧴"],
+    ["cup", "杯子", "🥤"],
+    ["chair", "椅子", "🪑"],
+    ["mouse", "滑鼠", "🖱️"],
+    ["keyboard", "鍵盤", "⌨️"],
+    ["laptop", "筆記型電腦", "💻"],
+    ["cell phone", "手機", "📱"],
+    ["book", "書本", "📖"]
+  ];
+
+  const handCatalog = [
+    ["Thumb_Up", "👍 比讚"],
+    ["Thumb_Down", "👎 倒讚"],
+    ["Victory", "✌️ 勝利手勢"],
+    ["Open_Palm", "🖐️ 張開手掌"],
+    ["Closed_Fist", "✊ 握拳"],
+    ["Pointing_Up", "☝️ 食指向上"]
+  ];
+
+  const $ = id => document.getElementById(id);
+
+  let sessionToken = 0;
+  let detector, gestures, stream;
+  let active = false;
+  let busy = false;
+  let phase = "idle";
+  let current = null;
+  let currentHand = null;
+  let previousPair = "";
+  let score = 0;
+  let skipCount = 0;
+  let transitionUntil = 0;
+  let raf = 0;
+  let lastVideoTime = -1;
+  let lastInference = 0;
+  let objectSince = 0;
+  let thumbSince = 0;
+  let thumbReleased = true;
+  let detected = [];
+  let lastGesture = "";
+
+  function showScreen(name) {
+    for (const id of ["homeScreen", "gameScreen", "resultScreen"]) {
+      $(id).hidden = id !== name;
+    }
+  }
+
+  function setStatus(message, kind = "") {
+    $("status").textContent = message;
+    $("status").className = "status " + kind;
+  }
+
+  function chooseTarget() {
+    const pairs = catalog.flatMap(obj =>
+      handCatalog.map(hand => ({
+        obj,
+        hand,
+        key: obj[0] + "|" + hand[0]
+      }))
+    );
+
+    const candidates = pairs.filter(x =>
+      x.key !== previousPair &&
+      x.obj[0] !== current?.[0]
+    );
+
+    const options = candidates.length ? candidates : pairs;
+    const pick = options[Math.floor(Math.random() * options.length)];
+
+    current = pick.obj;
+    currentHand = pick.hand;
+    previousPair = pick.key;
+
+    $("level").textContent = `${score + 1} / 3`;
+    $("target").textContent =
+      `🎯 ${current[2]} ${current[1]} ＋ ${currentHand[1]}`;
+
+    phase = "find";
+    objectSince = 0;
+    thumbSince = 0;
+    thumbReleased = false;
+
+    setStatus("第一步：讓 AI 看見指定物件；第二步：做出指定手勢。");
+  }
+
+  async function initialize() {
+    if (detector && gestures) return;
+
+    setStatus("正在載入 MediaPipe 函式庫…");
+    await loadMediaPipe();
+
+    setStatus("正在載入 MediaPipe WASM…");
+
+    const vision = await FilesetResolver.forVisionTasks(
+      `${CDN_BASE}/wasm`
+    );
+
+    setStatus("正在載入物件偵測模型…");
+
+    detector = await ObjectDetector.createFromOptions(vision, {
+      baseOptions: {
+        modelAssetPath:
+          "https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float32/1/efficientdet_lite0.tflite",
+        delegate: "CPU"
+      },
+      runningMode: "VIDEO",
+      scoreThreshold: 0.35,
+      maxResults: 8
+    });
+
+    setStatus("正在載入手勢辨識模型…");
+
+    gestures = await GestureRecognizer.createFromOptions(vision, {
+      baseOptions: {
+        modelAssetPath:
+          "https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task",
+        delegate: "CPU"
+      },
+      runningMode: "VIDEO",
+      numHands: 2
+    });
+  }
+
+  function draw() {
+    const canvas = $("overlay");
+    const video = $("video");
+    if (!video.videoWidth) return;
+
+    const w = video.videoWidth;
+    const h = video.videoHeight;
+
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w;
+      canvas.height = h;
+    }
+
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, w, h);
+    ctx.save();
+    ctx.translate(w, 0);
+    ctx.scale(-1, 1);
+    ctx.lineWidth = Math.max(3, w / 220);
+    ctx.font = `bold ${Math.max(17, w / 35)}px system-ui`;
+
+    for (const d of detected) {
+      const b = d.boundingBox;
+      if (!b) continue;
+
+      const label = d.categories?.[0]?.categoryName || "";
+      ctx.strokeStyle =
+        label === current?.[0] ? "#4ade80" : "#38bdf8";
+
+      ctx.strokeRect(b.originX, b.originY, b.width, b.height);
+
+      ctx.fillStyle = "#0f172a";
+      ctx.fillRect(
+        b.originX,
+        Math.max(0, b.originY - 28),
+        Math.min(w - b.originX, Math.max(115, label.length * 13)),
+        27
+      );
+
+      ctx.fillStyle = "#fff";
+      ctx.fillText(label, b.originX + 5, Math.max(20, b.originY - 7));
+    }
+
+    ctx.restore();
+  }
+
+  function captureSuccess() {
+    const video = $("video");
+    if (!video.videoWidth) return;
+
+    const shot = document.createElement("canvas");
+    shot.width = video.videoWidth;
+    shot.height = video.videoHeight;
+
+    const ctx = shot.getContext("2d");
+    ctx.translate(shot.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0, shot.width, shot.height);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    const overlay = $("overlay");
+    if (overlay.width && overlay.height) {
+      ctx.drawImage(overlay, 0, 0, shot.width, shot.height);
+    }
+
+    ctx.fillStyle = "rgba(15,23,42,.85)";
+    ctx.fillRect(0, 0, shot.width, 56);
+    ctx.fillStyle = "#fff";
+    ctx.font = `bold ${Math.max(16, shot.width / 38)}px sans-serif`;
+
+    ctx.fillText(
+      `第 ${score + 1} 關：${current[1]} + ${currentHand[1]}`,
+      14,
+      Math.min(37, shot.height - 5)
+    );
+
+    const url = shot.toDataURL("image/png");
+    const item = document.createElement("div");
+    item.className = "shot";
+
+    const title = document.createElement("strong");
+    title.textContent =
+      `第 ${score + 1} 關：${current[1]}＋${currentHand[1]}`;
+
+    const img = document.createElement("img");
+    img.src = url;
+    img.alt = title.textContent;
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `AI_Object_Hunt_第${score + 1}關.png`;
+    link.textContent = "下載這張截圖";
+
+    item.append(title, img, link);
+    $("gallery").append(item);
+  }
+
+  async function runCountdown(token) {
+    $("countdown").hidden = false;
+
+    for (let n = 3; n >= 1; n--) {
+      if (token !== sessionToken) return;
+      $("countdownNumber").textContent = n;
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    if (token !== sessionToken) return;
+
+    $("countdown").hidden = true;
+    setStatus("挑戰開始！請先讓 AI 找到指定物件。");
+  }
+
+  async function start() {
+    if (busy) return;
+
+    const token = ++sessionToken;
+    busy = true;
+    $("start").disabled = true;
+    showScreen("gameScreen");
+
+    try {
+      setStatus("正在啟動攝影機…");
+
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error(
+          "瀏覽器未提供攝影機功能；請使用 GitHub Pages HTTPS 網址"
+        );
+      }
+
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "user",
+          width: { ideal: 960 },
+          height: { ideal: 720 }
+        },
+        audio: false
+      });
+
+      if (token !== sessionToken) return;
+
+      $("video").srcObject = stream;
+      await $("video").play();
+
+      if (token !== sessionToken) return;
+
+      $("placeholder").hidden = true;
+
+      await initialize();
+
+      if (token !== sessionToken) return;
+
+      score = 0;
+      skipCount = 0;
+      transitionUntil = 0;
+      $("score").textContent = "0 / 3";
+      $("count").textContent = "0";
+      $("gallery").replaceChildren();
+
+      active = true;
+      lastVideoTime = -1;
+      lastInference = 0;
+      detected = [];
+
+      chooseTarget();
+
+      $("skip").disabled = true;
+      $("reset").disabled = true;
+
+      await runCountdown(token);
+
+      if (token !== sessionToken) return;
+
+      $("skip").disabled = false;
+      $("reset").disabled = false;
+      raf = requestAnimationFrame(loop);
+
+    } catch (err) {
+      if (token !== sessionToken) return;
+
+      setStatus(
+        "啟動失敗：" + (err?.message || err) +
+        "。請檢查網路、HTTPS 與攝影機權限。",
+        "warn"
+      );
+
+      $("placeholder").textContent = "⚠️ 遊戲啟動失敗";
+      $("placeholder").hidden = false;
+
+      if (stream) {
+        stream.getTracks().forEach(t => t.stop());
+        stream = null;
+      }
+
+    } finally {
+      busy = false;
+      $("start").disabled = false;
+    }
+  }
+
+  function loop(now) {
+    if (!active) return;
+
+    if (phase === "transition") {
+      if (now >= transitionUntil) {
+        $("stage").classList.remove("success");
+        $("successFlash").hidden = true;
+        chooseTarget();
+      } else {
+        raf = requestAnimationFrame(loop);
+        return;
+      }
+    }
+
+    const video = $("video");
+
+    if (
+      video.readyState >= 2 &&
+      video.currentTime !== lastVideoTime &&
+      now - lastInference > 120
+    ) {
+      lastVideoTime = video.currentTime;
+      lastInference = now;
+
+      try {
+        detected = detector.detectForVideo(video, now).detections || [];
+
+        const result = gestures.recognizeForVideo(video, now);
+        lastGesture =
+          result.gestures?.[0]?.[0]?.categoryName || "None";
+
+        if (phase === "find") {
+          const found = detected.some(d =>
+            d.categories?.some(c =>
+              c.categoryName === current[0] &&
+              c.score >= 0.4
+            )
+          );
+
+          if (found) {
+            if (!objectSince) objectSince = now;
+
+            if (now - objectSince >= 600) {
+              phase = "thumb";
+              thumbSince = 0;
+              thumbReleased = lastGesture !== currentHand[0];
+
+              setStatus(
+                `✓ 已找到 ${current[1]}！現在請做 ${currentHand[1]}。`,
+                "ok"
+              );
+            }
+          } else {
+            objectSince = 0;
+          }
+
+        } else if (phase === "thumb") {
+          if (lastGesture !== currentHand[0]) {
+            thumbReleased = true;
+            thumbSince = 0;
+
+          } else if (thumbReleased) {
+            if (!thumbSince) thumbSince = now;
+
+            if (now - thumbSince >= 400) {
+              draw();
+              captureSuccess();
+
+              $("stage").classList.add("success");
+              $("successFlash").hidden = false;
+
+              score++;
+              $("score").textContent = score + " / 3";
+
+              if (score >= 3) {
+                finish();
+              } else {
+                phase = "transition";
+                transitionUntil = now + 1500;
+
+                $("target").textContent =
+                  `✓ 第 ${score} 關完成！正在前往下一關…`;
+
+                setStatus("已截圖保存本關紀錄。準備下一關！", "ok");
+              }
+            }
+          }
+        }
+
+        draw();
+
+      } catch (error) {
+        setStatus(
+          "推論發生問題：" + (error?.message || error),
+          "warn"
+        );
+      }
+    }
+
+    if (active) raf = requestAnimationFrame(loop);
+  }
+
+  function finish() {
+    active = false;
+    cancelAnimationFrame(raf);
+    phase = "done";
+
+    $("skip").disabled = true;
+    $("resultSkipped").textContent = skipCount;
+
+    const token = sessionToken;
+
+    setTimeout(() => {
+      if (token !== sessionToken || phase !== "done") return;
+
+      $("stage").classList.remove("success");
+      $("successFlash").hidden = true;
+
+      if (stream) {
+        stream.getTracks().forEach(t => t.stop());
+        stream = null;
+      }
+
+      $("video").srcObject = null;
+      showScreen("resultScreen");
+    }, 1300);
+  }
+
+  function stop() {
+    ++sessionToken;
+    active = false;
+    cancelAnimationFrame(raf);
+
+    $("countdown").hidden = true;
+    $("stage").classList.remove("success");
+    $("successFlash").hidden = true;
+
+    if (stream) {
+      stream.getTracks().forEach(t => t.stop());
+      stream = null;
+    }
+
+    $("video").srcObject = null;
+    $("placeholder").hidden = false;
+    $("placeholder").innerHTML = "📷<br>正在啟動攝影機…";
+
+    detected = [];
+    const canvas = $("overlay");
+    canvas.getContext("2d").clearRect(
+      0, 0, canvas.width, canvas.height
+    );
+
+    phase = "idle";
+    $("target").textContent = "準備開始";
+    $("skip").disabled = true;
+    $("reset").disabled = true;
+    setStatus("已關閉攝影機");
+  }
+
+  $("start").onclick = async () => {
+    stop();
+    await start();
+  };
+
+  $("exit").onclick = () => {
+    stop();
+    showScreen("homeScreen");
+  };
+
+  $("backHome").onclick = () => {
+    stop();
+    showScreen("homeScreen");
+  };
+
+  $("playAgain").onclick = async () => {
+    stop();
+    await start();
+  };
+
+  $("reset").onclick = async () => {
+    stop();
+    await start();
+  };
+
+  $("skip").onclick = () => {
+    if (active && phase !== "transition" && phase !== "done") {
+      skipCount++;
+      $("count").textContent = skipCount;
+      chooseTarget();
+      setStatus("已跳過：不算過關，仍須完成 3 關。");
+    }
+  };
+
+  window.addEventListener("pagehide", () => {
+    if (stream) stream.getTracks().forEach(t => t.stop());
+  });
+
+  window.addEventListener("error", event => {
+    const message = "程式錯誤：" + event.message;
+
+    if (!$("gameScreen").hidden) {
+      setStatus(message, "warn");
+    } else {
+      $("homeStatus").textContent = message;
+    }
+  });
+
+  window.addEventListener("unhandledrejection", event => {
+    const message =
+      "載入錯誤：" +
+      (event.reason?.message || String(event.reason));
+
+    if (!$("gameScreen").hidden) {
+      setStatus(message, "warn");
+    } else {
+      $("homeStatus").textContent = message;
+    }
+  });
+</script>
+</body>
+</html>
