@@ -1,154 +1,244 @@
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#0f172a">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1220">
   <title>AI Object Hunt｜物件 × 手勢挑戰</title>
+
   <style>
     :root {
       font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif;
-      color: #e5e7eb;
       background: #0b1220;
+      color: #f1f5f9;
     }
+
     * { box-sizing: border-box; }
+
     body { margin: 0; }
-    main { max-width: 1050px; margin: auto; padding: 20px; }
+
     [hidden] { display: none !important; }
-    h1 { margin: 8px 0; }
-    p { color: #aebbd0; line-height: 1.65; }
+
+    main {
+      max-width: 1080px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h1, h2, h3 { margin-top: 0; }
+
+    p {
+      color: #aebbd0;
+      line-height: 1.7;
+    }
+
     button {
-      border: 0;
-      border-radius: 11px;
-      padding: 12px 17px;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 20px;
       background: #38bdf8;
       color: #082f49;
       font-size: 15px;
       font-weight: 750;
       cursor: pointer;
+      transition: opacity .2s, transform .2s;
     }
-    button.secondary { background: #334155; color: #f8fafc; }
-    button:disabled { opacity: .4; cursor: not-allowed; }
-    .screen { min-height: calc(100vh - 40px); }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+
+    button.secondary {
+      background: #334155;
+      color: #f8fafc;
+    }
+
+    .screen {
+      min-height: calc(100vh - 40px);
+    }
+
+    .eyebrow {
+      color: #7dd3fc;
+      letter-spacing: 2px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* 封面 */
+
     .intro {
-      max-width: 760px;
+      max-width: 780px;
       margin: auto;
       display: flex;
       flex-direction: column;
       align-items: center;
-      text-align: center;
       justify-content: center;
+      text-align: center;
       padding: 35px 8px;
     }
-    .eyebrow {
-      font-size: 12px;
-      letter-spacing: 2px;
-      color: #7dd3fc;
-      font-weight: 800;
+
+    .heroIcon {
+      font-size: 68px;
+      margin: 18px 0;
     }
-    .heroIcon { font-size: 65px; margin: 15px 0 0; }
+
     .intro h1 {
-      font-size: clamp(38px, 7vw, 65px);
-      letter-spacing: -2px;
+      font-size: clamp(38px, 7vw, 66px);
+      margin: 5px 0 12px;
     }
-    .subtitle { font-size: 19px; margin: 0 0 23px; }
+
+    .subtitle {
+      font-size: 19px;
+      margin: 0 0 24px;
+    }
+
     .ruleCard {
       width: 100%;
       background: #151f33;
       border: 1px solid #34445f;
       border-radius: 22px;
-      padding: 23px;
+      padding: 25px;
+      margin: 12px 0 20px;
       text-align: left;
-      margin: 12px 0 17px;
     }
-    .ruleCard h2 { margin: 0 0 16px; }
+
+    .ruleCard h2 {
+      margin-bottom: 16px;
+    }
+
     .rule {
       display: flex;
-      align-items: start;
+      align-items: flex-start;
       gap: 16px;
-      padding: 10px 0;
+      padding: 13px 0;
       border-bottom: 1px solid #293a54;
     }
-    .rule:last-child { border: 0; }
-    .rule span { color: #67e8f9; font-weight: 900; font-size: 18px; }
+
+    .rule:last-child {
+      border-bottom: none;
+    }
+
+    .rule span {
+      color: #67e8f9;
+      font-weight: 900;
+      font-size: 20px;
+    }
+
     .rule p { margin: 0; }
     .rule strong { color: #fff; }
+
     .greenText { color: #4ade80 !important; }
-    .smallNote { font-size: 13px; color: #9fb0c8; line-height: 1.7; }
+
     .primary {
       background: linear-gradient(115deg, #38bdf8, #67e8f9);
-      color: #082f49;
     }
+
     .bigButton {
       font-size: 20px;
-      padding: 17px 60px;
-      margin: 12px 0;
+      padding: 18px 65px;
       box-shadow: 0 10px 35px #0ea5e944;
+      margin: 12px 0;
     }
+
+    .smallNote {
+      color: #9fb0c8;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    /* 遊戲畫面 */
+
     .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      margin: 14px 0 20px;
+      gap: 15px;
+      margin: 14px 0 22px;
     }
-    .topbar h2 { margin: 3px 0; }
+
+    .topbar h2 { margin: 5px 0; }
+
     .stats {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      gap: 12px;
+      width: 100%;
     }
+
     .stat {
       background: #24344f;
-      padding: 14px;
-      border-radius: 12px;
+      border-radius: 13px;
+      padding: 16px;
       text-align: center;
     }
-    .stat b { display: block; font-size: 25px; }
+
+    .stat b {
+      display: block;
+      font-size: 27px;
+      margin-top: 5px;
+    }
+
     .challenge {
       background: #151f33;
       border: 1px solid #34445f;
-      border-radius: 16px;
-      padding: 18px;
-      margin: 16px 0;
+      border-radius: 17px;
+      padding: 20px;
+      margin: 17px 0;
     }
+
     .target {
-      font-size: clamp(22px, 4vw, 32px);
+      font-size: clamp(21px, 4vw, 33px);
       font-weight: 800;
-      margin: 9px 0;
+      margin: 12px 0;
     }
+
     .status {
-      padding: 10px 14px;
-      border-radius: 12px;
+      padding: 12px 15px;
       background: #273852;
-      line-height: 1.6;
+      border-radius: 12px;
+      line-height: 1.65;
+      overflow-wrap: anywhere;
     }
+
     .ok { color: #86efac; }
     .warn { color: #fbbf24; }
+
+    /* 攝影機 */
+
     .stage {
       position: relative;
       background: #020617;
       border: 6px solid #334155;
-      border-radius: 15px;
+      border-radius: 17px;
       overflow: hidden;
-      min-height: 310px;
+      min-height: 300px;
       display: grid;
       place-items: center;
-      transition: border-color .12s, box-shadow .12s;
+      transition: border-color .2s, box-shadow .2s;
     }
+
     .stage.success {
       border-color: #22c55e;
-      box-shadow: 0 0 0 5px #22c55e40, 0 0 65px #22c55e60;
+      box-shadow:
+        0 0 0 5px #22c55e40,
+        0 0 65px #22c55e80;
     }
+
     .stage video {
       display: block;
       width: 100%;
       height: auto;
-      max-height: 540px;
+      max-height: 550px;
       object-fit: contain;
       transform: scaleX(-1);
     }
+
     .stage canvas {
       position: absolute;
       inset: 0;
@@ -156,30 +246,43 @@
       height: 100%;
       pointer-events: none;
     }
+
     .placeholder {
       position: absolute;
       color: #aebbd0;
       text-align: center;
       padding: 20px;
+      line-height: 1.8;
     }
+
+    /* 三秒倒數 */
+
     .countdown {
       position: absolute;
       inset: 0;
       z-index: 5;
-      background: #020617b8;
+      background: #020617dd;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      gap: 5px;
     }
+
     .countdown span {
       font-size: clamp(100px, 20vw, 190px);
       font-weight: 900;
       color: #67e8f9;
       text-shadow: 0 5px 35px #0ea5e9;
     }
-    .countdown small { font-size: 22px; font-weight: 700; color: #fff; }
+
+    .countdown small {
+      color: white;
+      font-size: 22px;
+      font-weight: 750;
+    }
+
+    /* 過關特效 */
+
     .successFlash {
       position: absolute;
       inset: 0;
@@ -188,747 +291,1246 @@
       display: grid;
       place-items: center;
       color: white;
-      font-size: clamp(24px, 6vw, 50px);
+      font-size: clamp(25px, 6vw, 52px);
       font-weight: 900;
       text-shadow: 0 3px 15px #14532d;
     }
+
     .actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 9px;
-      margin-top: 14px;
+      gap: 10px;
+      margin-top: 15px;
     }
+
     .centered { justify-content: center; }
+
+    /* 截圖 */
+
     .gallery {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 12px;
-      margin-top: 12px;
+      gap: 14px;
+      margin-top: 15px;
     }
+
     .shot {
       background: #1e293b;
       border: 1px solid #34445f;
       border-radius: 12px;
-      padding: 10px;
+      padding: 12px;
     }
-    .shot img { display: block; width: 100%; border-radius: 8px; }
-    .shot a { display: inline-block; margin-top: 8px; color: #67e8f9; }
-    .shot strong { display: block; margin-bottom: 8px; }
+
+    .shot strong {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .shot img {
+      display: block;
+      width: 100%;
+      border-radius: 9px;
+    }
+
+    .shot a {
+      display: inline-block;
+      color: #67e8f9;
+      margin-top: 10px;
+    }
 
     @media (max-width: 550px) {
       main { padding: 12px; }
-      .ruleCard { padding: 16px; }
+      .ruleCard { padding: 17px; }
       .bigButton { width: 100%; }
       .topbar h2 { font-size: 18px; }
+      .stat { padding: 10px 6px; }
+      .stat b { font-size: 21px; }
       .stage { min-height: 220px; }
-      .stats { gap: 6px; }
-      .stat { padding: 9px; }
-      .stat b { font-size: 20px; }
+      .stats { gap: 7px; }
     }
   </style>
 </head>
+
 <body>
 <main>
 
-  <!-- 封面 -->
+  <!-- ===================== -->
+  <!-- 第一畫面：遊戲封面 -->
+  <!-- ===================== -->
+
   <section id="homeScreen" class="screen intro">
-    <div class="eyebrow">MEDIAPIPE TASKS · CLASSROOM CHALLENGE</div>
+
+    <div class="eyebrow">
+      MEDIAPIPE TASKS · AI CHALLENGE
+    </div>
+
     <div class="heroIcon">🎯</div>
+
     <h1>AI Object Hunt</h1>
-    <p class="subtitle">物件 × 手勢 · 三關隨機挑戰</p>
+
+    <p class="subtitle">
+      物件 × 手勢 · 三關隨機挑戰
+    </p>
 
     <div class="ruleCard">
+
       <h2>遊戲規則</h2>
+
       <div class="rule">
         <span>01</span>
-        <p>每關隨機抽出 <strong>1 種物件＋1 個手勢</strong>，不能自行選題。</p>
+        <p>
+          每關隨機抽出
+          <strong>1 種物件＋1 個手勢</strong>，
+          不能自行選題。
+        </p>
       </div>
+
       <div class="rule">
         <span>02</span>
-        <p>將指定物件放進鏡頭，辨識成功後完成指定手勢。</p>
+        <p>
+          先讓攝影機辨識指定物件，
+          成功後再完成指定手勢。
+        </p>
       </div>
+
       <div class="rule">
         <span>03</span>
-        <p>成功時畫面邊框<strong class="greenText">變綠</strong>，自動截圖並前往下一關。</p>
+        <p>
+          成功時攝影機周圍
+          <strong class="greenText">變綠色</strong>，
+          並自動截圖進入下一關。
+        </p>
       </div>
+
       <div class="rule">
         <span>04</span>
-        <p>總共要完成 <strong>3 關</strong>；跳過只會換題，不算通關。</p>
+        <p>
+          總共完成 <strong>3 關</strong>
+          才算勝利。跳過只會換題，
+          不會增加過關數。
+        </p>
       </div>
+
     </div>
 
     <p class="smallNote">
-      題庫：人、後背包、瓶子、杯子、椅子、滑鼠、鍵盤、
-      筆記型電腦、手機、書本。需允許攝影機權限。
+      題庫包含：人、後背包、瓶子、杯子、椅子、
+      滑鼠、鍵盤、筆記型電腦、手機、書本。
     </p>
-    <button id="start" class="primary bigButton">開始挑戰 →</button>
-    <p id="homeStatus" class="smallNote" role="status">
-      按下開始後會進入遊戲畫面，第一次載入模型可能需要一些時間。
+
+    <button id="start" class="primary bigButton">
+      開始挑戰 →
+    </button>
+
+    <p id="homeStatus" class="smallNote">
+      按下開始後會啟動攝影機並載入 AI 模型。
+      首次載入可能需要一些時間。
     </p>
+
   </section>
 
-  <!-- 遊戲畫面 -->
+
+  <!-- ===================== -->
+  <!-- 第二畫面：闖關遊戲 -->
+  <!-- ===================== -->
+
   <section id="gameScreen" class="screen" hidden>
+
     <div class="topbar">
+
       <div>
         <div class="eyebrow">AI OBJECT HUNT</div>
         <h2>物件 × 手勢挑戰</h2>
       </div>
-      <button id="exit" class="secondary">返回封面</button>
+
+      <button id="exit" class="secondary">
+        返回封面
+      </button>
+
     </div>
 
     <div class="stats">
-      <div class="stat">目前關卡<b id="level">1 / 3</b></div>
-      <div class="stat">成功完成<b id="score">0 / 3</b></div>
-      <div class="stat">跳過次數<b id="count">0</b></div>
+
+      <div class="stat">
+        目前關卡
+        <b id="level">1 / 3</b>
+      </div>
+
+      <div class="stat">
+        成功完成
+        <b id="score">0 / 3</b>
+      </div>
+
+      <div class="stat">
+        跳過次數
+        <b id="skipCount">0</b>
+      </div>
+
     </div>
 
     <div class="challenge">
+
       <div class="eyebrow">本關任務</div>
-      <div class="target" id="target">準備開始</div>
-      <div id="status" class="status" role="status">正在準備攝影機…</div>
+
+      <div id="target" class="target">
+        準備開始
+      </div>
+
+      <div id="status" class="status" role="status">
+        正在準備攝影機…
+      </div>
+
     </div>
 
     <div class="stage" id="stage">
-      <video id="video" autoplay playsinline muted></video>
+
+      <video
+        id="video"
+        autoplay
+        playsinline
+        muted>
+      </video>
+
       <canvas id="overlay"></canvas>
-      <div class="placeholder" id="placeholder">📷<br>正在啟動攝影機…</div>
+
+      <div id="placeholder" class="placeholder">
+        📷<br>正在啟動攝影機…
+      </div>
+
       <div id="countdown" class="countdown" hidden>
         <span id="countdownNumber">3</span>
         <small>準備開始</small>
       </div>
-      <div id="successFlash" class="successFlash" hidden>✓ 挑戰成功！</div>
+
+      <div id="successFlash" class="successFlash" hidden>
+        ✓ 挑戰成功！
+      </div>
+
     </div>
 
     <div class="actions">
-      <button id="skip" class="secondary" disabled>跳過換題（不計分）</button>
-      <button id="reset" class="secondary" disabled>重新挑戰</button>
+
+      <button id="skip" class="secondary" disabled>
+        跳過換題（不計分）
+      </button>
+
+      <button id="reset" class="secondary" disabled>
+        重新挑戰
+      </button>
+
+      <button id="retry" class="secondary" hidden>
+        重新啟動攝影機
+      </button>
+
     </div>
 
     <p class="smallNote">
-      先辨識物件，再做指定手勢。每次成功會自動截圖；
-      完成 3 關後查看成果。
+      先辨識物件，再做指定手勢。
+      每關成功後會自動截圖，完成三關後可下載成果。
     </p>
+
   </section>
 
-  <!-- 結果畫面 -->
+
+  <!-- ===================== -->
+  <!-- 第三畫面：挑戰結果 -->
+  <!-- ===================== -->
+
   <section id="resultScreen" class="screen intro" hidden>
+
     <div class="heroIcon">🏆</div>
+
     <h1>三關挑戰成功！</h1>
-    <p class="subtitle">恭喜完成所有指定物件與手勢</p>
+
+    <p class="subtitle">
+      恭喜完成所有指定物件與手勢
+    </p>
 
     <div class="stats">
-      <div class="stat">完成關卡<b>3 / 3</b></div>
-      <div class="stat">跳過次數<b id="resultSkipped">0</b></div>
-      <div class="stat">過關截圖<b>3 張</b></div>
+
+      <div class="stat">
+        完成關卡
+        <b>3 / 3</b>
+      </div>
+
+      <div class="stat">
+        跳過次數
+        <b id="resultSkipped">0</b>
+      </div>
+
+      <div class="stat">
+        過關截圖
+        <b>3 張</b>
+      </div>
+
     </div>
 
     <div class="ruleCard">
+
       <h2>📸 過關紀錄</h2>
-      <p class="smallNote">截圖僅保留在此頁，請在離開前下載。</p>
+
+      <p class="smallNote">
+        截圖保存在目前頁面中，
+        請在離開前下載。
+      </p>
+
       <div id="gallery" class="gallery"></div>
+
     </div>
 
     <div class="actions centered">
-      <button id="playAgain" class="primary">再玩一次</button>
-      <button id="backHome" class="secondary">返回封面</button>
+
+      <button id="playAgain" class="primary">
+        再玩一次
+      </button>
+
+      <button id="backHome" class="secondary">
+        返回封面
+      </button>
+
     </div>
+
   </section>
 
 </main>
 
+
 <script>
-  // MediaPipe 延遲載入，確保開始按鈕先正常運作
-  let FilesetResolver, ObjectDetector, GestureRecognizer;
+"use strict";
 
-  const CDN_VERSION = "0.10.22";
-  const CDN_BASE =
-    `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${CDN_VERSION}`;
+/* =========================================
+   1. MediaPipe 函式庫設定
+========================================= */
 
-  async function loadMediaPipe() {
-    if (FilesetResolver && ObjectDetector && GestureRecognizer) return;
+const VERSION = "0.10.35";
 
-    const urls = [
-      `${CDN_BASE}/+esm`,
-      `https://unpkg.com/@mediapipe/tasks-vision@${CDN_VERSION}/vision_bundle.mjs`
-    ];
+const CDN_ROOT =
+  `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${VERSION}`;
 
-    let lastError;
+const MODULE_URLS = [
+  `${CDN_ROOT}/vision_bundle.mjs`,
+  `https://unpkg.com/@mediapipe/tasks-vision@${VERSION}/vision_bundle.mjs`
+];
 
-    for (const url of urls) {
-      try {
-        const module = await Promise.race([
-          import(url),
-          new Promise((_, reject) =>
-            setTimeout(
-              () => reject(new Error("函式庫載入逾時（20 秒）")),
-              20000
-            )
-          )
-        ]);
+let FilesetResolver = null;
+let ObjectDetector = null;
+let GestureRecognizer = null;
 
-        FilesetResolver = module.FilesetResolver;
-        ObjectDetector = module.ObjectDetector;
-        GestureRecognizer = module.GestureRecognizer;
+function $(id) {
+  return document.getElementById(id);
+}
 
-        if (FilesetResolver && ObjectDetector && GestureRecognizer) return;
+function showScreen(screen) {
+  ["homeScreen", "gameScreen", "resultScreen"].forEach(id => {
+    $(id).hidden = id !== screen;
+  });
+}
 
-        throw new Error("MediaPipe 模組缺少必要元件");
-      } catch (error) {
-        console.warn("MediaPipe CDN 載入失敗：", url, error);
-        lastError = error;
+function setStatus(message, type = "") {
+  $("status").textContent = message;
+  $("status").className = "status " + type;
+}
+
+async function loadMediaPipe() {
+
+  if (
+    FilesetResolver &&
+    ObjectDetector &&
+    GestureRecognizer
+  ) {
+    return;
+  }
+
+  let lastError = null;
+
+  for (let i = 0; i < MODULE_URLS.length; i++) {
+
+    const url = MODULE_URLS[i];
+
+    setStatus(
+      `正在下載 MediaPipe 函式庫…（來源 ${i + 1}/${MODULE_URLS.length}）`
+    );
+
+    try {
+
+      const module = await Promise.race([
+
+        import(url),
+
+        new Promise((_, reject) => {
+          setTimeout(() => {
+            reject(new Error("函式庫下載超過 25 秒"));
+          }, 25000);
+        })
+
+      ]);
+
+      if (
+        !module.FilesetResolver ||
+        !module.ObjectDetector ||
+        !module.GestureRecognizer
+      ) {
+        throw new Error("下載的模組缺少必要元件");
       }
-    }
 
-    throw new Error(
-      "無法下載 MediaPipe 函式庫（已嘗試 jsDelivr、unpkg）：" +
-      (lastError?.message || lastError)
-    );
-  }
+      FilesetResolver = module.FilesetResolver;
+      ObjectDetector = module.ObjectDetector;
+      GestureRecognizer = module.GestureRecognizer;
 
-  const catalog = [
-    ["person", "人", "🧍"],
-    ["backpack", "後背包", "🎒"],
-    ["bottle", "瓶子", "🧴"],
-    ["cup", "杯子", "🥤"],
-    ["chair", "椅子", "🪑"],
-    ["mouse", "滑鼠", "🖱️"],
-    ["keyboard", "鍵盤", "⌨️"],
-    ["laptop", "筆記型電腦", "💻"],
-    ["cell phone", "手機", "📱"],
-    ["book", "書本", "📖"]
-  ];
+      return;
 
-  const handCatalog = [
-    ["Thumb_Up", "👍 比讚"],
-    ["Thumb_Down", "👎 倒讚"],
-    ["Victory", "✌️ 勝利手勢"],
-    ["Open_Palm", "🖐️ 張開手掌"],
-    ["Closed_Fist", "✊ 握拳"],
-    ["Pointing_Up", "☝️ 食指向上"]
-  ];
+    } catch (error) {
 
-  const $ = id => document.getElementById(id);
+      console.warn("MediaPipe 載入失敗：", url, error);
+      lastError = error;
 
-  let sessionToken = 0;
-  let detector, gestures, stream;
-  let active = false;
-  let busy = false;
-  let phase = "idle";
-  let current = null;
-  let currentHand = null;
-  let previousPair = "";
-  let score = 0;
-  let skipCount = 0;
-  let transitionUntil = 0;
-  let raf = 0;
-  let lastVideoTime = -1;
-  let lastInference = 0;
-  let objectSince = 0;
-  let thumbSince = 0;
-  let thumbReleased = true;
-  let detected = [];
-  let lastGesture = "";
-
-  function showScreen(name) {
-    for (const id of ["homeScreen", "gameScreen", "resultScreen"]) {
-      $(id).hidden = id !== name;
     }
   }
 
-  function setStatus(message, kind = "") {
-    $("status").textContent = message;
-    $("status").className = "status " + kind;
-  }
+  throw new Error(
+    "MediaPipe 函式庫下載失敗（已嘗試 jsDelivr、unpkg）。" +
+    (lastError?.message || "")
+  );
+}
 
-  function chooseTarget() {
-    const pairs = catalog.flatMap(obj =>
-      handCatalog.map(hand => ({
-        obj,
-        hand,
-        key: obj[0] + "|" + hand[0]
-      }))
-    );
 
-    const candidates = pairs.filter(x =>
-      x.key !== previousPair &&
-      x.obj[0] !== current?.[0]
-    );
+/* =========================================
+   2. 題庫設定
+========================================= */
 
-    const options = candidates.length ? candidates : pairs;
-    const pick = options[Math.floor(Math.random() * options.length)];
+const objects = [
+  ["person", "人", "🧍"],
+  ["backpack", "後背包", "🎒"],
+  ["bottle", "瓶子", "🧴"],
+  ["cup", "杯子", "🥤"],
+  ["chair", "椅子", "🪑"],
+  ["mouse", "滑鼠", "🖱️"],
+  ["keyboard", "鍵盤", "⌨️"],
+  ["laptop", "筆記型電腦", "💻"],
+  ["cell phone", "手機", "📱"],
+  ["book", "書本", "📖"]
+];
 
-    current = pick.obj;
-    currentHand = pick.hand;
-    previousPair = pick.key;
+const hands = [
+  ["Thumb_Up", "👍 比讚"],
+  ["Thumb_Down", "👎 倒讚"],
+  ["Victory", "✌️ 勝利手勢"],
+  ["Open_Palm", "🖐️ 張開手掌"],
+  ["Closed_Fist", "✊ 握拳"],
+  ["Pointing_Up", "☝️ 食指向上"]
+];
 
-    $("level").textContent = `${score + 1} / 3`;
-    $("target").textContent =
-      `🎯 ${current[2]} ${current[1]} ＋ ${currentHand[1]}`;
 
-    phase = "find";
-    objectSince = 0;
-    thumbSince = 0;
-    thumbReleased = false;
+/* =========================================
+   3. 遊戲變數
+========================================= */
 
-    setStatus("第一步：讓 AI 看見指定物件；第二步：做出指定手勢。");
-  }
+let detector = null;
+let recognizer = null;
+let stream = null;
 
-  async function initialize() {
-    if (detector && gestures) return;
+let active = false;
+let loading = false;
 
-    setStatus("正在載入 MediaPipe 函式庫…");
-    await loadMediaPipe();
+let score = 0;
+let skipped = 0;
 
-    setStatus("正在載入 MediaPipe WASM…");
+let currentObject = null;
+let currentHand = null;
 
-    const vision = await FilesetResolver.forVisionTasks(
-      `${CDN_BASE}/wasm`
-    );
+let previousPair = "";
 
-    setStatus("正在載入物件偵測模型…");
+let phase = "idle";
 
-    detector = await ObjectDetector.createFromOptions(vision, {
+let objectSince = 0;
+let gestureSince = 0;
+let gestureReleased = true;
+
+let detections = [];
+let gestureName = "None";
+
+let lastVideoTime = -1;
+let lastInference = 0;
+
+let raf = 0;
+let transitionUntil = 0;
+let sessionToken = 0;
+
+let successTimer = null;
+
+
+/* =========================================
+   4. 隨機抽題
+========================================= */
+
+function chooseTarget() {
+
+  const pairs = objects.flatMap(object =>
+    hands.map(hand => ({
+      object,
+      hand,
+      key: object[0] + "|" + hand[0]
+    }))
+  );
+
+  const candidates = pairs.filter(item =>
+    item.key !== previousPair &&
+    item.object[0] !== currentObject?.[0]
+  );
+
+  const pool = candidates.length ? candidates : pairs;
+
+  const selected =
+    pool[Math.floor(Math.random() * pool.length)];
+
+  currentObject = selected.object;
+  currentHand = selected.hand;
+
+  previousPair = selected.key;
+
+  $("level").textContent = `${score + 1} / 3`;
+
+  $("target").textContent =
+    `🎯 ${currentObject[2]} ${currentObject[1]} ＋ ${currentHand[1]}`;
+
+  phase = "find";
+
+  objectSince = 0;
+  gestureSince = 0;
+  gestureReleased = false;
+
+  setStatus(
+    "第一步：把指定物件放進鏡頭。辨識成功後再做指定手勢。"
+  );
+}
+
+
+/* =========================================
+   5. 初始化 AI 模型
+========================================= */
+
+async function initializeAI() {
+
+  if (detector && recognizer) return;
+
+  await loadMediaPipe();
+
+  setStatus("正在載入 MediaPipe 執行環境…");
+
+  const vision = await FilesetResolver.forVisionTasks(
+    `${CDN_ROOT}/wasm`
+  );
+
+  setStatus("正在下載物件辨識模型…");
+
+  detector = await ObjectDetector.createFromOptions(
+    vision,
+    {
       baseOptions: {
         modelAssetPath:
           "https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float32/1/efficientdet_lite0.tflite",
         delegate: "CPU"
       },
+
       runningMode: "VIDEO",
       scoreThreshold: 0.35,
-      maxResults: 8
-    });
+      maxResults: 12
+    }
+  );
 
-    setStatus("正在載入手勢辨識模型…");
+  setStatus("正在下載手勢辨識模型…");
 
-    gestures = await GestureRecognizer.createFromOptions(vision, {
+  recognizer = await GestureRecognizer.createFromOptions(
+    vision,
+    {
       baseOptions: {
         modelAssetPath:
           "https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task",
         delegate: "CPU"
       },
+
       runningMode: "VIDEO",
       numHands: 2
-    });
+    }
+  );
+
+  setStatus("AI 模型載入完成！", "ok");
+}
+
+
+/* =========================================
+   6. 攝影機畫框
+========================================= */
+
+function drawDetections() {
+
+  const video = $("video");
+  const canvas = $("overlay");
+
+  if (!video.videoWidth || !video.videoHeight) return;
+
+  const w = video.videoWidth;
+  const h = video.videoHeight;
+
+  if (canvas.width !== w || canvas.height !== h) {
+    canvas.width = w;
+    canvas.height = h;
   }
 
-  function draw() {
-    const canvas = $("overlay");
-    const video = $("video");
-    if (!video.videoWidth) return;
+  const ctx = canvas.getContext("2d");
 
-    const w = video.videoWidth;
-    const h = video.videoHeight;
+  ctx.clearRect(0, 0, w, h);
 
-    if (canvas.width !== w || canvas.height !== h) {
-      canvas.width = w;
-      canvas.height = h;
-    }
+  ctx.save();
 
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, w, h);
-    ctx.save();
-    ctx.translate(w, 0);
-    ctx.scale(-1, 1);
-    ctx.lineWidth = Math.max(3, w / 220);
-    ctx.font = `bold ${Math.max(17, w / 35)}px system-ui`;
+  ctx.translate(w, 0);
+  ctx.scale(-1, 1);
 
-    for (const d of detected) {
-      const b = d.boundingBox;
-      if (!b) continue;
+  ctx.lineWidth = Math.max(3, w / 220);
+  ctx.font = `bold ${Math.max(17, w / 35)}px sans-serif`;
 
-      const label = d.categories?.[0]?.categoryName || "";
-      ctx.strokeStyle =
-        label === current?.[0] ? "#4ade80" : "#38bdf8";
+  for (const detection of detections) {
 
-      ctx.strokeRect(b.originX, b.originY, b.width, b.height);
+    const box = detection.boundingBox;
+    if (!box) continue;
 
-      ctx.fillStyle = "#0f172a";
-      ctx.fillRect(
-        b.originX,
-        Math.max(0, b.originY - 28),
-        Math.min(w - b.originX, Math.max(115, label.length * 13)),
-        27
-      );
+    const label =
+      detection.categories?.[0]?.categoryName || "";
 
-      ctx.fillStyle = "#fff";
-      ctx.fillText(label, b.originX + 5, Math.max(20, b.originY - 7));
-    }
+    const isTarget = label === currentObject?.[0];
 
-    ctx.restore();
-  }
+    ctx.strokeStyle = isTarget
+      ? "#4ade80"
+      : "#38bdf8";
 
-  function captureSuccess() {
-    const video = $("video");
-    if (!video.videoWidth) return;
-
-    const shot = document.createElement("canvas");
-    shot.width = video.videoWidth;
-    shot.height = video.videoHeight;
-
-    const ctx = shot.getContext("2d");
-    ctx.translate(shot.width, 0);
-    ctx.scale(-1, 1);
-    ctx.drawImage(video, 0, 0, shot.width, shot.height);
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-    const overlay = $("overlay");
-    if (overlay.width && overlay.height) {
-      ctx.drawImage(overlay, 0, 0, shot.width, shot.height);
-    }
-
-    ctx.fillStyle = "rgba(15,23,42,.85)";
-    ctx.fillRect(0, 0, shot.width, 56);
-    ctx.fillStyle = "#fff";
-    ctx.font = `bold ${Math.max(16, shot.width / 38)}px sans-serif`;
-
-    ctx.fillText(
-      `第 ${score + 1} 關：${current[1]} + ${currentHand[1]}`,
-      14,
-      Math.min(37, shot.height - 5)
+    ctx.strokeRect(
+      box.originX,
+      box.originY,
+      box.width,
+      box.height
     );
 
-    const url = shot.toDataURL("image/png");
-    const item = document.createElement("div");
-    item.className = "shot";
+    ctx.fillStyle = "#0f172a";
 
-    const title = document.createElement("strong");
-    title.textContent =
-      `第 ${score + 1} 關：${current[1]}＋${currentHand[1]}`;
+    ctx.fillRect(
+      box.originX,
+      Math.max(0, box.originY - 28),
+      Math.max(115, label.length * 13),
+      27
+    );
 
-    const img = document.createElement("img");
-    img.src = url;
-    img.alt = title.textContent;
+    ctx.fillStyle = "#ffffff";
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `AI_Object_Hunt_第${score + 1}關.png`;
-    link.textContent = "下載這張截圖";
-
-    item.append(title, img, link);
-    $("gallery").append(item);
+    ctx.fillText(
+      label,
+      box.originX + 5,
+      Math.max(20, box.originY - 7)
+    );
   }
 
-  async function runCountdown(token) {
-    $("countdown").hidden = false;
+  ctx.restore();
+}
 
-    for (let n = 3; n >= 1; n--) {
-      if (token !== sessionToken) return;
-      $("countdownNumber").textContent = n;
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
+
+/* =========================================
+   7. 截圖功能
+========================================= */
+
+function captureSuccess() {
+
+  const video = $("video");
+
+  if (!video.videoWidth) return;
+
+  const shot = document.createElement("canvas");
+
+  shot.width = video.videoWidth;
+  shot.height = video.videoHeight;
+
+  const ctx = shot.getContext("2d");
+
+  ctx.translate(shot.width, 0);
+  ctx.scale(-1, 1);
+
+  ctx.drawImage(
+    video,
+    0,
+    0,
+    shot.width,
+    shot.height
+  );
+
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+  const overlay = $("overlay");
+
+  if (overlay.width && overlay.height) {
+    ctx.drawImage(
+      overlay,
+      0,
+      0,
+      shot.width,
+      shot.height
+    );
+  }
+
+  // 截圖上方標籤
+  ctx.fillStyle = "rgba(15,23,42,.85)";
+  ctx.fillRect(0, 0, shot.width, 60);
+
+  ctx.fillStyle = "#ffffff";
+
+  ctx.font =
+    `bold ${Math.max(16, shot.width / 38)}px sans-serif`;
+
+  ctx.fillText(
+    `第 ${score + 1} 關：${currentObject[1]} + ${currentHand[1]}`,
+    14,
+    38
+  );
+
+  const imageURL = shot.toDataURL("image/png");
+
+  const item = document.createElement("div");
+  item.className = "shot";
+
+  const title = document.createElement("strong");
+  title.textContent =
+    `第 ${score + 1} 關：${currentObject[1]}＋${currentHand[1]}`;
+
+  const image = document.createElement("img");
+  image.src = imageURL;
+  image.alt = title.textContent;
+
+  const download = document.createElement("a");
+  download.href = imageURL;
+  download.download =
+    `AI_Object_Hunt_第${score + 1}關.png`;
+
+  download.textContent = "下載這張截圖";
+
+  item.append(title, image, download);
+
+  $("gallery").appendChild(item);
+}
+
+
+/* =========================================
+   8. 三秒倒數
+========================================= */
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function countdown(token) {
+
+  $("countdown").hidden = false;
+
+  for (let number = 3; number >= 1; number--) {
 
     if (token !== sessionToken) return;
 
-    $("countdown").hidden = true;
-    setStatus("挑戰開始！請先讓 AI 找到指定物件。");
+    $("countdownNumber").textContent = number;
+
+    await sleep(1000);
   }
 
-  async function start() {
-    if (busy) return;
+  if (token !== sessionToken) return;
 
-    const token = ++sessionToken;
-    busy = true;
-    $("start").disabled = true;
-    showScreen("gameScreen");
+  $("countdown").hidden = true;
 
-    try {
-      setStatus("正在啟動攝影機…");
+  setStatus(
+    "挑戰開始！請先把指定物件放進鏡頭。",
+    "ok"
+  );
+}
 
-      if (!navigator.mediaDevices?.getUserMedia) {
-        throw new Error(
-          "瀏覽器未提供攝影機功能；請使用 GitHub Pages HTTPS 網址"
-        );
-      }
 
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "user",
-          width: { ideal: 960 },
-          height: { ideal: 720 }
-        },
-        audio: false
-      });
+/* =========================================
+   9. 開始遊戲
+========================================= */
 
-      if (token !== sessionToken) return;
+async function startGame() {
 
-      $("video").srcObject = stream;
-      await $("video").play();
+  if (loading) return;
 
-      if (token !== sessionToken) return;
+  const token = ++sessionToken;
 
-      $("placeholder").hidden = true;
+  loading = true;
 
-      await initialize();
+  $("start").disabled = true;
+  $("retry").hidden = true;
 
-      if (token !== sessionToken) return;
+  showScreen("gameScreen");
 
-      score = 0;
-      skipCount = 0;
-      transitionUntil = 0;
-      $("score").textContent = "0 / 3";
-      $("count").textContent = "0";
-      $("gallery").replaceChildren();
+  try {
 
-      active = true;
-      lastVideoTime = -1;
-      lastInference = 0;
-      detected = [];
+    setStatus("正在啟動攝影機…");
 
-      chooseTarget();
-
-      $("skip").disabled = true;
-      $("reset").disabled = true;
-
-      await runCountdown(token);
-
-      if (token !== sessionToken) return;
-
-      $("skip").disabled = false;
-      $("reset").disabled = false;
-      raf = requestAnimationFrame(loop);
-
-    } catch (err) {
-      if (token !== sessionToken) return;
-
-      setStatus(
-        "啟動失敗：" + (err?.message || err) +
-        "。請檢查網路、HTTPS 與攝影機權限。",
-        "warn"
+    if (!navigator.mediaDevices?.getUserMedia) {
+      throw new Error(
+        "目前瀏覽器不支援攝影機，請使用 HTTPS 網址。"
       );
-
-      $("placeholder").textContent = "⚠️ 遊戲啟動失敗";
-      $("placeholder").hidden = false;
-
-      if (stream) {
-        stream.getTracks().forEach(t => t.stop());
-        stream = null;
-      }
-
-    } finally {
-      busy = false;
-      $("start").disabled = false;
-    }
-  }
-
-  function loop(now) {
-    if (!active) return;
-
-    if (phase === "transition") {
-      if (now >= transitionUntil) {
-        $("stage").classList.remove("success");
-        $("successFlash").hidden = true;
-        chooseTarget();
-      } else {
-        raf = requestAnimationFrame(loop);
-        return;
-      }
     }
 
-    const video = $("video");
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: "user",
+        width: { ideal: 960 },
+        height: { ideal: 720 }
+      },
+      audio: false
+    });
 
-    if (
-      video.readyState >= 2 &&
-      video.currentTime !== lastVideoTime &&
-      now - lastInference > 120
-    ) {
-      lastVideoTime = video.currentTime;
-      lastInference = now;
+    if (token !== sessionToken) return;
 
-      try {
-        detected = detector.detectForVideo(video, now).detections || [];
+    $("video").srcObject = stream;
 
-        const result = gestures.recognizeForVideo(video, now);
-        lastGesture =
-          result.gestures?.[0]?.[0]?.categoryName || "None";
+    await $("video").play();
 
-        if (phase === "find") {
-          const found = detected.some(d =>
-            d.categories?.some(c =>
-              c.categoryName === current[0] &&
-              c.score >= 0.4
-            )
-          );
+    if (token !== sessionToken) return;
 
-          if (found) {
-            if (!objectSince) objectSince = now;
+    $("placeholder").hidden = true;
 
-            if (now - objectSince >= 600) {
-              phase = "thumb";
-              thumbSince = 0;
-              thumbReleased = lastGesture !== currentHand[0];
+    await initializeAI();
 
-              setStatus(
-                `✓ 已找到 ${current[1]}！現在請做 ${currentHand[1]}。`,
-                "ok"
-              );
-            }
-          } else {
-            objectSince = 0;
-          }
+    if (token !== sessionToken) return;
 
-        } else if (phase === "thumb") {
-          if (lastGesture !== currentHand[0]) {
-            thumbReleased = true;
-            thumbSince = 0;
+    score = 0;
+    skipped = 0;
 
-          } else if (thumbReleased) {
-            if (!thumbSince) thumbSince = now;
+    $("score").textContent = "0 / 3";
+    $("skipCount").textContent = "0";
 
-            if (now - thumbSince >= 400) {
-              draw();
-              captureSuccess();
+    $("gallery").replaceChildren();
 
-              $("stage").classList.add("success");
-              $("successFlash").hidden = false;
+    active = true;
 
-              score++;
-              $("score").textContent = score + " / 3";
+    lastVideoTime = -1;
+    lastInference = 0;
+    detections = [];
 
-              if (score >= 3) {
-                finish();
-              } else {
-                phase = "transition";
-                transitionUntil = now + 1500;
-
-                $("target").textContent =
-                  `✓ 第 ${score} 關完成！正在前往下一關…`;
-
-                setStatus("已截圖保存本關紀錄。準備下一關！", "ok");
-              }
-            }
-          }
-        }
-
-        draw();
-
-      } catch (error) {
-        setStatus(
-          "推論發生問題：" + (error?.message || error),
-          "warn"
-        );
-      }
-    }
-
-    if (active) raf = requestAnimationFrame(loop);
-  }
-
-  function finish() {
-    active = false;
-    cancelAnimationFrame(raf);
-    phase = "done";
+    chooseTarget();
 
     $("skip").disabled = true;
-    $("resultSkipped").textContent = skipCount;
+    $("reset").disabled = true;
 
-    const token = sessionToken;
+    await countdown(token);
 
-    setTimeout(() => {
-      if (token !== sessionToken || phase !== "done") return;
+    if (token !== sessionToken) return;
+
+    $("skip").disabled = false;
+    $("reset").disabled = false;
+
+    raf = requestAnimationFrame(gameLoop);
+
+  } catch (error) {
+
+    if (token !== sessionToken) return;
+
+    active = false;
+
+    let message = error?.message || String(error);
+
+    if (
+      error?.name === "NotAllowedError" ||
+      error?.name === "PermissionDeniedError"
+    ) {
+      message =
+        "攝影機權限遭到拒絕。請在瀏覽器網址列允許使用攝影機。";
+    }
+
+    setStatus("啟動失敗：" + message, "warn");
+
+    $("placeholder").textContent = "⚠️ 遊戲啟動失敗";
+    $("placeholder").hidden = false;
+
+    $("retry").hidden = false;
+
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      stream = null;
+    }
+
+  } finally {
+
+    loading = false;
+    $("start").disabled = false;
+
+  }
+}
+
+
+/* =========================================
+   10. AI 辨識與闖關判斷
+========================================= */
+
+function gameLoop(now) {
+
+  if (!active) return;
+
+  if (phase === "transition") {
+
+    if (now >= transitionUntil) {
 
       $("stage").classList.remove("success");
       $("successFlash").hidden = true;
 
-      if (stream) {
-        stream.getTracks().forEach(t => t.stop());
-        stream = null;
-      }
+      chooseTarget();
 
-      $("video").srcObject = null;
-      showScreen("resultScreen");
-    }, 1300);
+    } else {
+
+      raf = requestAnimationFrame(gameLoop);
+      return;
+    }
   }
 
-  function stop() {
-    ++sessionToken;
-    active = false;
-    cancelAnimationFrame(raf);
+  const video = $("video");
 
-    $("countdown").hidden = true;
+  if (
+    video.readyState >= 2 &&
+    video.currentTime !== lastVideoTime &&
+    now - lastInference >= 120
+  ) {
+
+    lastVideoTime = video.currentTime;
+    lastInference = now;
+
+    try {
+
+      const result = detector.detectForVideo(video, now);
+
+      detections = result.detections || [];
+
+      const handResult =
+        recognizer.recognizeForVideo(video, now);
+
+      // 如果有兩隻手，任一隻完成指定手勢即可
+      const gestureNames =
+        (handResult.gestures || [])
+          .map(hand => hand?.[0]?.categoryName || "None");
+
+      gestureName = gestureNames[0] || "None";
+
+      const correctGesture =
+        gestureNames.includes(currentHand?.[0]);
+
+      // 第一階段：尋找指定物件
+      if (phase === "find") {
+
+        const found = detections.some(detection =>
+          detection.categories?.some(category =>
+            category.categoryName === currentObject[0] &&
+            category.score >= 0.4
+          )
+        );
+
+        if (found) {
+
+          if (!objectSince) {
+            objectSince = now;
+          }
+
+          // 持續辨識到 600ms
+          if (now - objectSince >= 600) {
+
+            phase = "gesture";
+            gestureSince = 0;
+
+            gestureReleased = !correctGesture;
+
+            setStatus(
+              `✓ 找到「${currentObject[1]}」！` +
+              `現在請做「${currentHand[1]}」。` +
+              `若已經做好手勢，請先放下再做一次。`,
+              "ok"
+            );
+          }
+
+        } else {
+
+          objectSince = 0;
+        }
+
+      }
+
+      // 第二階段：辨識指定手勢
+      else if (phase === "gesture") {
+
+        if (!correctGesture) {
+
+          gestureReleased = true;
+          gestureSince = 0;
+
+        } else if (gestureReleased) {
+
+          if (!gestureSince) {
+            gestureSince = now;
+          }
+
+          // 持續正確 400ms
+          if (now - gestureSince >= 400) {
+
+            // 先繪製畫框再截圖
+            drawDetections();
+
+            try {
+              captureSuccess();
+            } catch (captureError) {
+              console.warn("截圖失敗：", captureError);
+            }
+
+            $("stage").classList.add("success");
+            $("successFlash").hidden = false;
+
+            score++;
+
+            $("score").textContent = `${score} / 3`;
+
+            if (score >= 3) {
+
+              finishGame();
+
+            } else {
+
+              phase = "transition";
+
+              transitionUntil = now + 1500;
+
+              $("target").textContent =
+                `✓ 第 ${score} 關完成！準備下一關…`;
+
+              setStatus(
+                "挑戰成功！已自動截圖，準備下一關。",
+                "ok"
+              );
+            }
+          }
+        }
+      }
+
+      drawDetections();
+
+    } catch (error) {
+
+      console.error("AI 推論錯誤：", error);
+
+      setStatus(
+        "辨識發生問題：" + (error?.message || error),
+        "warn"
+      );
+    }
+  }
+
+  if (active) {
+    raf = requestAnimationFrame(gameLoop);
+  }
+}
+
+
+/* =========================================
+   11. 完成三關
+========================================= */
+
+function finishGame() {
+
+  active = false;
+
+  cancelAnimationFrame(raf);
+
+  phase = "done";
+
+  $("skip").disabled = true;
+  $("reset").disabled = true;
+
+  $("resultSkipped").textContent = skipped;
+
+  const token = sessionToken;
+
+  successTimer = setTimeout(() => {
+
+    if (
+      token !== sessionToken ||
+      phase !== "done"
+    ) {
+      return;
+    }
+
     $("stage").classList.remove("success");
     $("successFlash").hidden = true;
 
     if (stream) {
-      stream.getTracks().forEach(t => t.stop());
+      stream.getTracks().forEach(track => track.stop());
       stream = null;
     }
 
     $("video").srcObject = null;
-    $("placeholder").hidden = false;
-    $("placeholder").innerHTML = "📷<br>正在啟動攝影機…";
 
-    detected = [];
-    const canvas = $("overlay");
-    canvas.getContext("2d").clearRect(
-      0, 0, canvas.width, canvas.height
-    );
+    showScreen("resultScreen");
 
-    phase = "idle";
-    $("target").textContent = "準備開始";
-    $("skip").disabled = true;
-    $("reset").disabled = true;
-    setStatus("已關閉攝影機");
+  }, 1500);
+}
+
+
+/* =========================================
+   12. 停止與重置
+========================================= */
+
+function stopGame() {
+
+  sessionToken++;
+
+  active = false;
+
+  cancelAnimationFrame(raf);
+
+  clearTimeout(successTimer);
+
+  $("countdown").hidden = true;
+
+  $("stage").classList.remove("success");
+  $("successFlash").hidden = true;
+
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
   }
 
-  $("start").onclick = async () => {
-    stop();
-    await start();
-  };
+  $("video").srcObject = null;
 
-  $("exit").onclick = () => {
-    stop();
-    showScreen("homeScreen");
-  };
+  $("placeholder").innerHTML =
+    "📷<br>正在啟動攝影機…";
 
-  $("backHome").onclick = () => {
-    stop();
-    showScreen("homeScreen");
-  };
+  $("placeholder").hidden = false;
 
-  $("playAgain").onclick = async () => {
-    stop();
-    await start();
-  };
+  $("retry").hidden = true;
 
-  $("reset").onclick = async () => {
-    stop();
-    await start();
-  };
+  detections = [];
 
-  $("skip").onclick = () => {
-    if (active && phase !== "transition" && phase !== "done") {
-      skipCount++;
-      $("count").textContent = skipCount;
-      chooseTarget();
-      setStatus("已跳過：不算過關，仍須完成 3 關。");
-    }
-  };
+  const canvas = $("overlay");
+  const ctx = canvas.getContext("2d");
 
-  window.addEventListener("pagehide", () => {
-    if (stream) stream.getTracks().forEach(t => t.stop());
-  });
+  ctx.clearRect(
+    0, 0,
+    canvas.width,
+    canvas.height
+  );
 
-  window.addEventListener("error", event => {
-    const message = "程式錯誤：" + event.message;
+  phase = "idle";
 
-    if (!$("gameScreen").hidden) {
-      setStatus(message, "warn");
-    } else {
-      $("homeStatus").textContent = message;
-    }
-  });
+  $("target").textContent = "準備開始";
 
-  window.addEventListener("unhandledrejection", event => {
-    const message =
-      "載入錯誤：" +
-      (event.reason?.message || String(event.reason));
+  $("skip").disabled = true;
+  $("reset").disabled = true;
 
-    if (!$("gameScreen").hidden) {
-      setStatus(message, "warn");
-    } else {
-      $("homeStatus").textContent = message;
-    }
-  });
+  setStatus("已關閉攝影機");
+}
+
+
+/* =========================================
+   13. 所有按鈕事件
+========================================= */
+
+// 開始挑戰
+$("start").addEventListener("click", async () => {
+  stopGame();
+  await startGame();
+});
+
+// 返回封面
+$("exit").addEventListener("click", () => {
+  stopGame();
+  showScreen("homeScreen");
+});
+
+// 再玩一次
+$("playAgain").addEventListener("click", async () => {
+  stopGame();
+  await startGame();
+});
+
+// 結果頁返回
+$("backHome").addEventListener("click", () => {
+  stopGame();
+  showScreen("homeScreen");
+});
+
+// 重新挑戰
+$("reset").addEventListener("click", async () => {
+  stopGame();
+  await startGame();
+});
+
+// 重新啟動攝影機
+$("retry").addEventListener("click", async () => {
+  stopGame();
+  await startGame();
+});
+
+// 跳過題目，不計分
+$("skip").addEventListener("click", () => {
+
+  if (!active) return;
+
+  if (
+    phase === "transition" ||
+    phase === "done"
+  ) {
+    return;
+  }
+
+  skipped++;
+
+  $("skipCount").textContent = skipped;
+
+  chooseTarget();
+
+  setStatus(
+    "已跳過本題，不算過關。仍須完成三關。"
+  );
+});
+
+
+/* =========================================
+   14. 錯誤提示與清理
+========================================= */
+
+window.addEventListener("pagehide", () => {
+
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+  }
+
+});
+
+window.addEventListener("error", event => {
+
+  const message = "程式錯誤：" + event.message;
+
+  if (!$("gameScreen").hidden) {
+    setStatus(message, "warn");
+  } else {
+    $("homeStatus").textContent = message;
+  }
+
+});
+
+window.addEventListener("unhandledrejection", event => {
+
+  const message =
+    "載入錯誤：" +
+    (event.reason?.message || String(event.reason));
+
+  if (!$("gameScreen").hidden) {
+    setStatus(message, "warn");
+  } else {
+    $("homeStatus").textContent = message;
+  }
+
+});
+
 </script>
+
 </body>
 </html>
